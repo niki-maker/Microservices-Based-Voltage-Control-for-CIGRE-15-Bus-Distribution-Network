@@ -1,0 +1,116 @@
+
+services:
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=12345678
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=Hello
+      - DOCKER_INFLUXDB_INIT_RETENTION=30d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=custom-token
+    volumes:
+      - ./influxdb/token:/token_storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+    # Init container to seed the JSON into the volume
+  compensator_device:
+    image: alpine
+    command: sh -c "cp /source/compensator_device.json /data/"
+    volumes:
+      - compensator_data:/data
+      - ./compensator_device:/source:ro
+    restart: "no"
+
+  ntp:
+    build: ./ntp
+    container_name: ntp
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_BUCKET=Hello
+      - INFLUXDB_TOKEN_FILE=/token_storage/token.txt
+    volumes:
+      - ./influxdb/token:/token_storage
+      - shared_excel_data:/shared_volume
+      - compensator_data:/app/data
+
+  main:
+    build:
+      context: .
+      dockerfile: main/Dockerfile
+    container_name: main
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./network:/app/main/network
+      - shared_excel_data:/shared_volume
+
+  envvarco:
+    build:
+      context: .
+      dockerfile: envvarco/Dockerfile
+    container_name: envvarco
+    ports:
+      - "4002:4002"
+    volumes:
+      - ./network:/app/envvarco/network
+      - shared_excel_data:/shared_volume
+      - compensator_data:/app/data
+
+  bus_priority_score:
+    build:
+      context: .
+      dockerfile: bus_priority_score/Dockerfile
+    container_name: bus_priority_score
+    ports:
+      - "4003:4003"
+    volumes:
+      - ./network:/app/bus_priority_score/network
+      - shared_excel_data:/shared_volume
+      - compensator_data:/app/data
+  
+  trigger_var_control:
+    build:
+      context: .
+      dockerfile: trigger_var_control/Dockerfile
+    container_name: trigger_var_control
+    ports:
+      - "4004:4004"
+    volumes:
+      - ./network:/app/trigger_var_control/network
+      - shared_excel_data:/shared_volume
+
+  grafana:
+    build: ./grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards/main
+
+volumes:
+  shared_excel_data:
+    name: shared_excel_data
+  compensator_data:
+    name: compensator_data

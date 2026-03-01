@@ -1,0 +1,13 @@
+# ide folders
+.idea
+.vscode
+.venv
+
+# python folders
+*.egg-info/
+__pycache__
+build
+dist
+
+# log files
+*.log

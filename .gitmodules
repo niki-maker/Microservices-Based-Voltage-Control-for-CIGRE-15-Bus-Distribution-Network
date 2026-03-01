@@ -1,0 +1,3 @@
+[submodule "pyvolt"]
+	path = pyvolt
+	url = https://github.com/sede-open/pyvolt

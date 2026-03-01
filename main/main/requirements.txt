@@ -1,0 +1,7 @@
+requests
+flask
+cimpy
+villas-dataprocessing
+openpyxl
+pandas
+numpy
