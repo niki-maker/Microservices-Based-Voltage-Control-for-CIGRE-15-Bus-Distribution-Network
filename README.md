@@ -31,7 +31,11 @@ The framework is designed for:
 - Reproducible containerized deployment  
 
 ---
+# Real-Time Dashboards
+<img width="1920" height="1080" alt="Screenshot (849)" src="https://github.com/user-attachments/assets/cef34739-1669-433d-8515-abafdaa9f033" /> <img width="1920" height="1080" alt="Screenshot (850)" src="https://github.com/user-attachments/assets/ab05ac24-3b6a-40b1-9d32-99f3bc176e54" />
 
+
+---
 # 🔌 Test System: CIGRE 15-Bus MV Model
 
 ### Network Characteristics
