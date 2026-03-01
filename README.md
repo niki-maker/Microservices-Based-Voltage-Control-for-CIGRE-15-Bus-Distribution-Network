@@ -180,10 +180,10 @@ Return to Monitoring
 
 ```bash
 # Clone repository
-git clone <your-repository-url>
+git clone https://github.com/niki-maker/Microservices-Based-Voltage-Control-for-CIGRE-15-Bus-Distribution-Network
 
 # Navigate to project directory
-cd <repository-name>
+cd Microservices-Based-Voltage-Control-for-CIGRE-15-Bus-Distribution-Network
 
 # Build containers
 docker-compose build
