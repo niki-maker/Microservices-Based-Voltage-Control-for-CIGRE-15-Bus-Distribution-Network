@@ -5,7 +5,7 @@
 
 ---
 
-## 📌 System Overview
+# 📌 System Overview
 
 This repository presents a Dockerized Active Distribution Management framework developed on the CIGRE 15-Bus Medium Voltage (MV) distribution system.
 
